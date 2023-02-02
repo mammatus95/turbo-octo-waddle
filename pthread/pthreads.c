@@ -25,11 +25,12 @@ int main(int argc, char *argv[]) {
     rc = pthread_create(&(thread[i]), &thread_attr, (void *) &run, NULL);
     if (rc == 0) {
       pthread_detach(thread[i]);
+      //printf("Thread %i created with PID %lu\n", i + 1, (unsigned long) pthread_self());
       if ((i + 1) % 100 == 0)
-        printf("%i threads so far ...\n", i + 1);
+        printf("%i threads with PID %lu so far ...\n", i + 1, (unsigned long) pthread_self());
     } else {
-      printf("Failed with return code %i creating thread %i (%s).\n",
-         rc, i + 1, strerror(rc));
+      printf("Failed with return code %i creating thread %i PID %lu (%s).\n",
+         rc, i + 1, (unsigned long) pthread_self(), strerror(rc));
 
       // can we allocate memory?
       char *block = NULL;
