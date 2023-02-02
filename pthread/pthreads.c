@@ -10,8 +10,20 @@
 #define PTHREAD_STACK_MIN 1*1024*1024*1024
 int i;
 
+
+
 void run(void) {
   //std::cout << "Thread ID: " << pthread_self() << std::endl;
+  FILE *fp;
+  fp = fopen("/sys/fs/cgroup/pids/user.slice/user-0.slice/pids.current", "r");
+  if (fp == NULL) {
+    printf("Failed to open file\n");
+    return 1;
+  }
+  int pid_count;
+  fscanf(fp, "%d", &pid_count);
+  printf("The current number of processes is: %d\n", pid_count);
+  fclose(fp);
   sleep(60 * 60);
 }
 
