@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <string.h>
 #include <sys/sysinfo.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 
 #define MAX_THREADS 100000
@@ -12,8 +14,8 @@ int i;
 
 
 
-void run(void) {
-  //std::cout << "Thread ID: " << pthread_self() << std::endl;
+void run(void) { 
+  /* number of processes */
   FILE *fp;
   fp = fopen("/sys/fs/cgroup/pids/user.slice/user-0.slice/pids.current", "r");
   if (fp == NULL) {
@@ -22,8 +24,18 @@ void run(void) {
   }
   int pid_count;
   fscanf(fp, "%d", &pid_count);
-  printf("The current number of processes is: %d\n", pid_count);
   fclose(fp);
+  
+  /* getrusage */
+  struct rusage usage;
+  int result = getrusage(RUSAGE_SELF, &usage);
+  if (result == -1) {
+    perror("getrusage");
+    return 1;
+  }
+
+  //print output
+  printf("Current number of processes: %d Size of the process's memory: %ld Swaps: %ld\n", pid_count,usage.ru_maxrss,usage.ru_nswap);
   sleep(60 * 60);
 }
 
